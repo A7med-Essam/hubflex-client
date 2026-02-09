@@ -5,11 +5,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { SubscriptionService, SubscriptionPlan } from '../../../core/services/subscription.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-subscription',
   standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent],
+  imports: [CommonModule, LoadingSpinnerComponent, ConfirmationDialogComponent],
   template: `
     <div class="min-h-screen bg-dark-900">
       <div class="container mx-auto px-4 py-8">
@@ -89,71 +90,105 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
             <app-loading-spinner text="Loading plans..." />
           } @else {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              @for (plan of subscriptionService.plansSignal(); track plan.id) {
-                <div 
-                  class="bg-dark-800 rounded-xl p-6 border transition-all hover:scale-105"
-                  [class.border-gray-700]="plan.tier !== 2"
-                  [class.border-2]="plan.tier === 2"
-                  [class.border-gray-400]="plan.tier === 2"
-                  [class.scale-105]="plan.tier === 2">
-                  
-                  @if (plan.tier === 2) {
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <span class="px-4 py-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white text-sm font-semibold rounded-full">
-                        POPULAR
-                      </span>
-                    </div>
-                  }
+    @for (plan of subscriptionService.plansSignal(); track plan.id) {
+      <div 
+        class="relative bg-dark-800 rounded-xl p-6 border transition-all hover:scale-105 hover:shadow-2xl"
+        [class.border-gray-700]="plan.tier !== 2"
+        [class.border-2]="plan.tier === 2"
+        [class.border-gray-400]="plan.tier === 2"
+        [class.transform]="plan.tier === 2"
+        [class.scale-105]="plan.tier === 2">
+        
+        @if (plan.tier === 2) {
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="px-4 py-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white text-sm font-semibold rounded-full shadow-lg">
+              POPULAR
+            </span>
+          </div>
+        }
 
-                  <div class="text-center mb-6" [class.mt-4]="plan.tier === 2">
-                    <div 
-                      class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-                      [class.bg-gradient-to-br]="true"
-                      [class.from-orange-500]="plan.tier === 1"
-                      [class.to-orange-600]="plan.tier === 1"
-                      [class.from-gray-400]="plan.tier === 2"
-                      [class.to-gray-500]="plan.tier === 2"
-                      [class.from-yellow-500]="plan.tier === 3"
-                      [class.to-yellow-600]="plan.tier === 3">
-                      <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                      </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-2">{{ plan.name }}</h3>
-                    <p class="text-4xl font-bold text-white mb-2">
-                      \${{ plan.pricePerMonth.toFixed(2) }}
-                      <span class="text-lg text-gray-400">/mo</span>
-                    </p>
-                    <p class="text-sm text-gray-400">{{ plan.description }}</p>
-                  </div>
+        <div class="text-center mb-6" [class.mt-2]="plan.tier === 2">
+          <div 
+            class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg"
+            [ngClass]="{
+              'bg-gradient-to-br from-orange-500 to-orange-600': plan.tier === 1,
+              'bg-gradient-to-br from-gray-400 to-gray-500': plan.tier === 2,
+              'bg-gradient-to-br from-yellow-500 to-yellow-600': plan.tier === 3
+            }">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">{{ plan.name }}</h3>
+          <p class="text-4xl font-bold text-white mb-2">
+            \${{ plan.pricePerMonth.toFixed(2) }}
+            <span class="text-lg text-gray-400 font-normal">/mo</span>
+          </p>
+          <p class="text-sm text-gray-400 min-h-[40px]">{{ plan.description }}</p>
+        </div>
 
-                  <button
-                    (click)="selectPlan(plan)"
-                    [disabled]="processingPayment()"
-                    class="w-full py-3 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    [class.bg-orange-600]="plan.tier === 1"
-                    [class.hover:bg-orange-700]="plan.tier === 1"
-                    [class.bg-gray-400]="plan.tier === 2"
-                    [class.hover:bg-gray-300]="plan.tier === 2"
-                    [class.bg-yellow-600]="plan.tier === 3"
-                    [class.hover:bg-yellow-700]="plan.tier === 3"
-                    class="text-white">
-                    @if (processingPayment()) {
-                      <span class="flex items-center justify-center gap-2">
-                        <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Processing...
-                      </span>
-                    } @else {
-                      Select Plan
-                    }
-                  </button>
-                </div>
-              }
-            </div>
+        <!-- Features would go here -->
+        <div class="mb-6 space-y-2 min-h-[120px]">
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>{{ plan.tier === 1 ? 'Basic' : plan.tier === 2 ? 'Extended' : 'Full' }} catalog</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>{{ plan.maxStreamQuality === 1 ? 'SD' : plan.maxStreamQuality === 2 ? 'HD' : '4K Ultra HD' }}</span>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-300">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>{{ plan.tier }} {{ plan.tier === 1 ? 'device' : 'devices' }}</span>
+          </div>
+        </div>
+
+        <button
+          (click)="selectPlan(plan)"
+          [disabled]="processingPayment() || isCurrentPlan(plan)"
+          class="w-full py-3 font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+          [ngClass]="{
+            'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white': plan.tier === 1,
+            'bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-300 hover:to-gray-400 text-white': plan.tier === 2,
+            'bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white': plan.tier === 3
+          }">
+          @if (processingPayment()) {
+            <span class="flex items-center justify-center gap-2">
+              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
+            </span>
+          } @else if (isCurrentPlan(plan)) {
+            <span>Current Plan</span>
+          } @else {
+            <span>Select Plan</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
           }
         </div>
       </div>
     </div>
+        <app-confirmation-dialog
+      [show]="showCancelDialog()"
+      title="Cancel Subscription"
+      message="Are you sure you want to cancel your subscription? You will lose access at the end of your billing period."
+      type="danger"
+      confirmText="Yes, Cancel"
+      cancelText="Keep Subscription"
+      [showInput]="true"
+      inputLabel="Tell us why you're cancelling (optional)"
+      inputPlaceholder="Your feedback helps us improve..."
+      (confirm)="onConfirmCancel($event)"
+      (cancel)="showCancelDialog.set(false)">
+    </app-confirmation-dialog>
   `
 })
 export class SubscriptionComponent implements OnInit {
@@ -161,6 +196,31 @@ export class SubscriptionComponent implements OnInit {
   subscriptionService = inject(SubscriptionService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+
+  showCancelDialog = signal(false);
+isCurrentPlan(plan: SubscriptionPlan): boolean {
+  const currentSub = this.subscriptionService.currentSubscriptionSignal();
+  return currentSub?.tier === plan.tier;
+}
+  onConfirmCancel(reason: string): void {
+    this.showCancelDialog.set(false);
+
+    this.subscriptionService.cancelSubscription(reason || undefined).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.toastService.success('Subscription cancelled successfully');
+          this.loadCurrentSubscription();
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+      },
+      error: (error) => {
+        this.toastService.error(error.error?.message || 'Failed to cancel subscription');
+      }
+    });
+  }
 
   loadingPlans = signal(false);
   processingPayment = signal(false);
@@ -240,56 +300,37 @@ export class SubscriptionComponent implements OnInit {
     });
   }
 
-  upgradePlan(plan: SubscriptionPlan): void {
-    if (!confirm(`Upgrade to ${plan.name} plan?`)) return;
+upgradePlan(plan: SubscriptionPlan): void {
+  this.processingPayment.set(true);
 
-    this.processingPayment.set(true);
-
-    this.subscriptionService.upgradeSubscription(plan.id).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.toastService.success(`Successfully upgraded to ${plan.name}!`);
-          this.loadCurrentSubscription();
-          
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        }
+  this.subscriptionService.upgradeSubscription(plan.id).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.toastService.success(`Successfully upgraded to ${plan.name}!`);
+        
+        // Update auth service user data
+        this.authService.user.set({
+          ...this.authService.user()!,
+          currentSubscription: response.data
+        });
+        
+        this.loadCurrentSubscription();
         this.processingPayment.set(false);
-      },
-      error: (error) => {
-        this.processingPayment.set(false);
-        this.toastService.error(error.error?.message || 'Failed to upgrade subscription');
       }
-    });
-  }
+    },
+    error: (error) => {
+      this.processingPayment.set(false);
+      this.toastService.error(error.error?.message || 'Failed to upgrade subscription');
+    }
+  });
+}
 
   showUpgradeOptions(): void {
     this.toastService.info('Choose a higher tier plan below to upgrade');
   }
 
   confirmCancelSubscription(): void {
-    if (!confirm('Are you sure you want to cancel your subscription? You will lose access at the end of your billing period.')) {
-      return;
-    }
-
-    const reason = prompt('Please tell us why you\'re cancelling (optional):');
-
-    this.subscriptionService.cancelSubscription(reason || undefined).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.toastService.success('Subscription cancelled successfully');
-          this.loadCurrentSubscription();
-          
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        }
-      },
-      error: (error) => {
-        this.toastService.error(error.error?.message || 'Failed to cancel subscription');
-      }
-    });
+    this.showCancelDialog.set(true);
   }
 
   formatDate(date: string): string {

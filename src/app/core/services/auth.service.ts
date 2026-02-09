@@ -23,7 +23,7 @@ export class AuthService {
   private tokenSignal = signal<string | null>(null);
 
   // Computed signals
-  user = this.userSignal.asReadonly();
+  user = this.userSignal;
   isAuthenticated = computed(() => this.userSignal() !== null);
   isAdmin = computed(() => this.userSignal()?.roles.includes('Admin') ?? false);
   isSupport = computed(() => this.userSignal()?.roles.includes('Support') || (this.userSignal()?.roles.includes('Admin') ?? false));
