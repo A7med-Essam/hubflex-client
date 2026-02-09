@@ -295,32 +295,44 @@ export class MovieDetailComponent implements OnInit {
   }
 
   submitReview(): void {
-    if (!this.movie() || this.newReviewRating() === 0 || !this.newReviewContent.trim()) {
-      return;
-    }
-
-    const review = {
-      movieId: this.movie()!.id,
-      rating: this.newReviewRating(),
-      title: this.newReviewTitle || undefined,
-      content: this.newReviewContent
-    };
-
-    this.reviewService.createReview(review).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.toastService.success('Review submitted successfully!');
-          this.loadReviews(this.movie()!.id);
-          this.loadMovie(this.movie()!.id); // Reload to update rating
-          this.showReviewForm.set(false);
-          this.resetReviewForm();
-        }
-      },
-      error: (error) => {
-        this.toastService.error(error.error?.message || 'Failed to submit review');
-      }
-    });
+  if (!this.movie() || this.newReviewRating() === 0 || !this.newReviewContent.trim()) {
+    this.toastService.error('Please provide a rating and review content');
+    return;
   }
+
+  const review = {
+    movieId: this.movie()!.id,
+    rating: this.newReviewRating(),
+    title: this.newReviewTitle || undefined,
+    content: this.newReviewContent
+  };
+
+  this.reviewService.createReview(review).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.toastService.success('Review submitted successfully!');
+        this.loadReviews(this.movie()!.id);
+        this.loadMovie(this.movie()!.id);
+        this.showReviewForm.set(false);
+        this.resetReviewForm();
+      }
+    },
+    error: (error) => {
+      console.error('Review error:', error);
+      
+      // Display backend error message
+      let errorMessage = 'Failed to submit review';
+      
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.error?.errors && error.error.errors?.Content.length > 0) {
+        errorMessage = error.error.errors.Content.join(', ');
+      }
+      
+      this.toastService.error(errorMessage);
+    }
+  });
+}
 
   resetReviewForm(): void {
     this.newReviewRating.set(0);

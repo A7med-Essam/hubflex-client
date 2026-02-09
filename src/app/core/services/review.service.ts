@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Review, Comment } from '../models/movie.model';
+import { Review, Comment, MyReview } from '../models/movie.model';
 import { ApiResponse, PaginatedResponse } from '../models/api-response.model';
 
 @Injectable({
@@ -57,6 +57,17 @@ export class ReviewService {
     return this.http.post<ApiResponse<Comment>>(
       `${environment.apiUrl}/comments`,
       comment
+    );
+  }
+
+  getMyReviews(pageNumber = 1, pageSize = 20): Observable<ApiResponse<PaginatedResponse<MyReview>>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+
+    return this.http.get<ApiResponse<PaginatedResponse<MyReview>>>(
+      `${environment.apiUrl}/reviews/my-reviews`,
+      { params }
     );
   }
 }

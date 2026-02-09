@@ -7,6 +7,8 @@ import { ToastService } from '../../../core/services/toast.service';
 import { RatingStarsComponent } from '../../../shared/components/rating-stars/rating-stars.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
+
+
 @Component({
   selector: 'app-my-reviews',
   standalone: true,
@@ -98,10 +100,25 @@ export class MyReviewsComponent implements OnInit {
   loading = signal(false);
 
   ngOnInit(): void {
-    // Note: This would require a new endpoint to get user's reviews
-    // For now, showing placeholder
-    this.reviews.set([]);
+    this.loadReviews();
   }
+
+  loadReviews(): void {
+    this.loading.set(true);
+    this.reviewService.getMyReviews().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.reviews.set(response.data.items);
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.toastService.error('Failed to load reviews');
+      }
+    });
+  }
+
 
   viewMovie(movieId: string): void {
     this.router.navigate(['/movies', movieId]);

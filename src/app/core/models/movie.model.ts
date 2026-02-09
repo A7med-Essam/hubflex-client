@@ -43,6 +43,10 @@ export interface Review {
   updatedAt?: string;
 }
 
+export interface MyReview extends Review{
+  movieTitle: string;
+}
+
 export interface Comment {
   id: string;
   userId: string;
