@@ -87,7 +87,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
                 <!-- Dropdown -->
                 @if (showUserMenu()) {
-                  <div class="absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-gray-700 py-2 animate-fade-in">
+                  <div class="bg-list absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-gray-700 py-2 animate-fade-in">
                     <div class="px-4 py-3 border-b border-gray-700">
                       <p class="text-sm font-medium text-white">
                         {{ authService.user()?.firstName }} {{ authService.user()?.lastName }}
@@ -175,7 +175,12 @@ import { AuthService } from '../../../core/services/auth.service';
 
     <!-- Spacer to prevent content from going under fixed navbar -->
     <div class="h-16"></div>
-  `
+  `,
+  styles: [`
+    .bg-list {
+      background-color:#585858;
+    }
+    `]
 })
 export class NavbarComponent {
   authService = inject(AuthService);

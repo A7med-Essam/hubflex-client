@@ -43,6 +43,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: '',
+        loadComponent: () => import('./features/profile/profile-page/profile.component').then(m => m.ProfileComponent)
+      },
+      {
         path: 'watch-later',
         loadComponent: () => import('./features/profile/watch-later/watch-later.component').then(m => m.WatchLaterComponent)
       },
@@ -73,6 +77,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/home'
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
   }
 ];
