@@ -31,11 +31,20 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
                   {{ subscriptionService.currentSubscriptionSignal()!.planName }}
                 </h2>
               </div>
-              <div class="w-20 h-20 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center">
-                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-              </div>
+              <div
+  class="w-20 h-20 bg-gradient-to-br rounded-full flex items-center justify-center"
+  [ngClass]="{
+    'from-orange-500 to-orange-600': subscriptionService.currentSubscriptionSignal()?.tier === 1,
+    'from-gray-400 to-gray-500': subscriptionService.currentSubscriptionSignal()?.tier === 2,
+    'from-yellow-500 to-yellow-600': subscriptionService.currentSubscriptionSignal()?.tier === 3
+  }"
+>
+  <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+    <path
+      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+    />
+  </svg>
+</div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -109,11 +118,11 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
 
         <div class="text-center mb-6" [class.mt-2]="plan.tier === 2">
           <div 
-            class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg"
+            class="bg-gradient-to-br w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg"
             [ngClass]="{
-              'bg-gradient-to-br from-orange-500 to-orange-600': plan.tier === 1,
-              'bg-gradient-to-br from-gray-400 to-gray-500': plan.tier === 2,
-              'bg-gradient-to-br from-yellow-500 to-yellow-600': plan.tier === 3
+              'from-orange-500 to-orange-600': plan.tier === 1,
+              'from-gray-400 to-gray-500': plan.tier === 2,
+              'from-yellow-500 to-yellow-600': plan.tier === 3
             }">
             <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
@@ -152,11 +161,11 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
         <button
           (click)="selectPlan(plan)"
           [disabled]="processingPayment() || isCurrentPlan(plan)"
-          class="w-full py-3 font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+          class="bg-gradient-to-r w-full py-3 font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
           [ngClass]="{
-            'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white': plan.tier === 1,
-            'bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-300 hover:to-gray-400 text-white': plan.tier === 2,
-            'bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white': plan.tier === 3
+            'from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white': plan.tier === 1,
+            'from-gray-400 to-gray-500 hover:from-gray-300 hover:to-gray-400 text-white': plan.tier === 2,
+            'from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white': plan.tier === 3
           }">
           @if (processingPayment()) {
             <span class="flex items-center justify-center gap-2">
@@ -212,7 +221,7 @@ isCurrentPlan(plan: SubscriptionPlan): boolean {
           this.loadCurrentSubscription();
           
           setTimeout(() => {
-            window.location.reload();
+            // window.location.reload();
           }, 1500);
         }
       },
@@ -288,7 +297,7 @@ isCurrentPlan(plan: SubscriptionPlan): boolean {
           
           // Reload user data to update subscription in auth
           setTimeout(() => {
-            window.location.reload();
+            // window.location.reload();
           }, 1500);
         }
         this.processingPayment.set(false);
